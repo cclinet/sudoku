@@ -27,7 +27,7 @@ namespace sudoku {
     using NeighborLineType = array<size_t, NEIGHBOR>;
     using NeighborType = array<NeighborLineType, N>;
     using AvailableType = array<array<int8_t, 9>, N>;
-    using DOFType = std::array<uint8_t, N>; //Degrees of freedom
+    using DOFType = std::array<int8_t, N>; //Degrees of freedom
 
 
     constexpr bool is_in_neighbour(const NeighborLineType &neighbor, const ValueType &j) {
@@ -68,6 +68,23 @@ namespace sudoku {
     static constexpr const NeighborType neighbors = generate_neighbors();
     static constexpr const AvailableType const_available = generate_available();
     static constexpr auto const_dof = generate_dof();
+
+    class Solver {
+    public:
+        Solver() = default;
+        ~Solver() = default;
+        bool set_board(BoardType board);
+        BoardType get_board();
+        bool solve();
+    private:
+        BoardType board_{};
+        AvailableType available_ = const_available;
+        DOFType dof = const_dof;
+        bool init();
+        void increase_available(size_t fill_area, ValueType value);
+        void decrease_available(size_t fill_area, ValueType value);
+        size_t find_area();
+    };
 }
 
 #endif //SUDOKU_BOARD_H
