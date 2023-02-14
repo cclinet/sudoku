@@ -1,9 +1,6 @@
-//
-// Created by forma on 2023/2/13.
-//
 #include <iostream>
 #include <array>
-#include <ranges>
+#include <algorithm>
 
 #ifndef SUDOKU_BOARD_H
 #define SUDOKU_BOARD_H
@@ -23,16 +20,22 @@ namespace sudoku {
 
     using namespace std;
     static constexpr uint8_t N = 81;
-    using Board = array<uint8_t, N>;
     static constexpr uint8_t NEIGHBOR = 20;
-    namespace views = std::views;
 
-    constexpr bool is_in_neighbour(const array<uint8_t, NEIGHBOR> &neighbor, const uint8_t &j) {
+    using ValueType = uint8_t;
+    using BoardType = array<ValueType, N>;
+    using NeighborLineType = array<size_t, NEIGHBOR>;
+    using NeighborType = array<NeighborLineType, N>;
+    using AvailableType = array<array<int8_t, 9>, N>;
+    using DOFType = std::array<uint8_t, N>; //Degrees of freedom
+
+
+    constexpr bool is_in_neighbour(const NeighborLineType &neighbor, const ValueType &j) {
         return std::find(neighbor.begin(), neighbor.end(), j) != neighbor.end();
     }
 
     constexpr auto generate_neighbors() {
-        array<array<uint8_t, NEIGHBOR>, N> neighbors{};
+        NeighborType neighbors{};
         for (auto i = 0; i < N; i++) {
             size_t n = 0;
             for (auto j = 0; j < N; j++) {
@@ -45,7 +48,26 @@ namespace sudoku {
         }
         return neighbors;
     }
-    static constexpr auto neighbors = generate_neighbors();
+
+    constexpr auto generate_available() {
+        AvailableType available{};
+        for (auto &i: available) {
+            for (auto &j: i) {
+                j = 1;
+            }
+        }
+        return available;
+    }
+
+    constexpr auto generate_dof() {
+        DOFType dof{};
+        std::fill(dof.begin(), dof.end(), 9);
+        return dof;
+    }
+
+    static constexpr const NeighborType neighbors = generate_neighbors();
+    static constexpr const AvailableType const_available = generate_available();
+    static constexpr auto const_dof = generate_dof();
 }
 
 #endif //SUDOKU_BOARD_H

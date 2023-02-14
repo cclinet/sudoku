@@ -1,45 +1,48 @@
-//
-// Created by forma on 2023/2/13.
-//
-
 #ifndef SUDOKU_HELPER_H
 #define SUDOKU_HELPER_H
 
 #include <array>
 #include "board.h"
+#include <fstream>
+#include <iostream>
+
 
 namespace sudoku {
     using namespace std;
-
-    void print_neighbor(array<array<uint8_t, NEIGHBOR>, N> board) {
+    std::string filename = "log.txt";
+    std::ofstream ostrm(filename);
+//    std::ostream ostrm(std::cout.rdbuf());
+    void print_neighbor(const array<array<uint8_t, NEIGHBOR>, N> &board) {
         std::for_each(board.begin(), board.end(), [](const array<uint8_t, NEIGHBOR> &one_line) {
-            std::for_each(one_line.begin(), one_line.end(), [](const uint8_t &i) { std::cout << +i << "|"; });
+            std::for_each(one_line.begin(), one_line.end(), [](const uint8_t &i) { ostrm << +i << "|"; });
 
-            std::cout << "\n" << "-------------------------" << std::endl;
+            ostrm << "\n" << "-------------------------" <<"\n";
         });
     }
 
-    void print_board(array<uint8_t, N> board) {
+    void print_board(const array<uint8_t, N> &board) {
+        ostrm << "-------------------" << "\n";
         for (auto it = board.begin(); it != board.end(); it++) {
             auto index = it - board.begin();
             if (index % 9 == 0) {
-                std::cout << "|";
+                ostrm << "|";
             }
-            std::cout <<+*it;
+            ostrm << +*it;
 
             if (index % 3 == 2) {
-                std::cout << "|";
+                ostrm << "|";
             } else {
-                std::cout<<' ';
+                ostrm << ' ';
             }
 
             if (index % 9 == 8) {
-                std::cout << "\n";
-                if (index / 9 %3 == 2) {
-                    std::cout<<"-------------------"<< "\n";
+                ostrm << "\n";
+                if (index / 9 % 3 == 2) {
+                    ostrm << "-------------------" << "\n";
                 }
             }
         }
+        ostrm<<std::endl;
     }
 }
 #endif //SUDOKU_HELPER_H
